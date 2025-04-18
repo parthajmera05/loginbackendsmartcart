@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const User = require('./models/userSchema');
+const Order = require('./models/orderSchema');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -64,6 +65,38 @@ app.get('/user', async (req, res) => {
     const user = await User.findOne();
     res.json(user);
 });
+app.post('/neworder', async (req, res) => {
+    try {
+      const { email, items, total_price, platform } = req.body;
+  
+      if (!email || !items || !total_price || !platform) {
+        return res.status(400).json({ message: 'Missing required fields' });
+      }
+  
+      const newOrder = new Order({ email, items, total_price, platform });
+      await newOrder.save();
+  
+      res.status(201).json({ message: 'Order placed successfully' });
+    } catch (err) {
+      res.status(500).json({ error: 'Server error', details: err.message });
+    }
+  });
+  
+  // ✅ GET: Get All Orders for User
+  app.get('/orders', async (req, res) => {
+    try {
+      const { email } = req.query;
+  
+      if (!email) return res.status(400).json({ message: 'Email is required' });
+  
+      const orders = await Order.find({ email }).sort({ date: -1 });
+  
+      res.json({ orders });
+    } catch (err) {
+      res.status(500).json({ error: 'Server error', details: err.message });
+    }
+  });
+  
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
