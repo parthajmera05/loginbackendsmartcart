@@ -4,6 +4,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const User = require('./models/userSchema');
 const Order = require('./models/orderSchema');
+const Address = require('./models/addressSchema');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -94,6 +95,28 @@ app.post('/neworder', async (req, res) => {
       res.json({ orders });
     } catch (err) {
       res.status(500).json({ error: 'Server error', details: err.message });
+    }
+  });
+app.post('/saveaddress', async (req, res) => {
+    try {
+      const newAddress = new Address(req.body);
+      await newAddress.save();
+      res.status(200).json({ message: 'Address saved successfully' });
+    } catch (err) {
+      res.status(500).json({ message: 'Failed to save address', error: err.message });
+    }
+  });
+  
+  // Get addresses by email
+app.get('/address', async (req, res) => {
+    const email = req.query.email;
+    if (!email) return res.status(400).json({ message: 'Email is required' });
+  
+    try {
+      const addresses = await Address.find({ email });
+      res.status(200).json(addresses);
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching addresses', error: err.message });
     }
   });
   
