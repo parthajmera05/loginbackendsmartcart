@@ -11,9 +11,12 @@ dotenv.config();
 const app = express();
 const PORT = 5000;
 
-
 app.use(cors());
 app.use(express.json());
+
+
+
+
 const MONGODB_URI = process.env.MONGO_DB_URL;
 
 mongoose.connect(MONGODB_URI, {
@@ -22,6 +25,10 @@ mongoose.connect(MONGODB_URI, {
 }).then(() => console.log('MongoDB connected'))
   .catch(err => console.error(err));
 
+
+
+
+  
 app.get('/good', (req, res) => {    
     res.json({ message: 'Good' });
 });
@@ -83,7 +90,7 @@ app.post('/neworder', async (req, res) => {
     }
   });
   
-  // ✅ GET: Get All Orders for User
+
   app.get('/orders', async (req, res) => {
     try {
       const { email } = req.query;
